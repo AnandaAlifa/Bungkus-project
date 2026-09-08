@@ -14,7 +14,7 @@ Bungkus! Dynamic Pricing Engine — Comprehensive Unit Tests
 from __future__ import annotations
 
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timezone, timedelta
 from typing import Generator
 
 import pytest
@@ -59,7 +59,7 @@ def aggressive_config() -> PricingConfig:
 @pytest.fixture
 def sample_product() -> Product:
     """Sample product for testing."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     return Product(
         id="prod-001",
         merchant_id="merch-001",
@@ -77,7 +77,7 @@ def sample_product() -> Product:
 @pytest.fixture
 def fresh_product() -> Product:
     """Just-listed product (full time remaining)."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     return Product(
         id="prod-fresh",
         merchant_id="merch-001",
@@ -95,7 +95,7 @@ def fresh_product() -> Product:
 @pytest.fixture
 def expiring_product() -> Product:
     """Product about to expire (1 hour left)."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     return Product(
         id="prod-expiring",
         merchant_id="merch-001",
@@ -113,7 +113,7 @@ def expiring_product() -> Product:
 @pytest.fixture
 def empty_stock_product() -> Product:
     """Product with zero remaining stock."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     return Product(
         id="prod-empty",
         merchant_id="merch-001",
@@ -755,7 +755,7 @@ class TestProductModel:
     
     def test_product_validation_success(self):
         """Valid product should pass validation."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         product = Product(
             id="test",
             merchant_id="merch",
@@ -774,7 +774,7 @@ class TestProductModel:
     
     def test_product_p_min_greater_than_p_base(self):
         """p_min > p_base should fail validation."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         with pytest.raises(ValueError):
             Product(
                 id="test",
@@ -790,7 +790,7 @@ class TestProductModel:
     
     def test_product_q_rem_greater_than_q_init(self):
         """q_rem > q_init should fail validation."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         with pytest.raises(ValueError):
             Product(
                 id="test",
@@ -907,7 +907,7 @@ class TestPricingWorker:
         """Worker should delist expired products."""
         worker, repo, publisher = worker_setup
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         expired = Product(
             id="expired-1",
             merchant_id="merch-1",
@@ -962,7 +962,7 @@ class TestIntegrationScenarios:
     
     def test_daily_pricing_cycle(self, default_config):
         """Simulate a full day of pricing."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         # Product listed 24 hours ago, expiring now
         result = calculate_bungkus_dynamic_price(
@@ -988,7 +988,7 @@ class TestIntegrationScenarios:
     
     def test_bakery_clearance_scenario(self, default_config):
         """Bakery clearing day-old bread."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         # Bread listed at 6am, expiring at 6pm (12h window)
         # Currently 4pm (2h remaining)
@@ -1009,7 +1009,7 @@ class TestIntegrationScenarios:
     
     def test_supermarket_last_hour(self, default_config):
         """Supermarket final hour clearance."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         # 30 minutes to closing
         result = calculate_bungkus_dynamic_price(
@@ -1035,7 +1035,7 @@ class TestIntegrationScenarios:
     
     def test_restaurant_surplus(self, default_config):
         """Restaurant with surplus cooked food."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         # Prepared 2 hours ago, 1 hour shelf life left
         result = calculate_bungkus_dynamic_price(

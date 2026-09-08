@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timezone, timedelta
 from typing import Callable, List, Optional, Protocol
 
 from .models import (
@@ -168,7 +168,7 @@ class PricingWorker:
                     # Always count as processed, even on error
                     self.state.products_processed += 1
             
-            self.state.last_run_at = datetime.utcnow()
+            self.state.last_run_at = datetime.now(timezone.utc)
             logger.info(
                 f"Pricing cycle complete: "
                 f"{self.state.products_priced} priced, "
@@ -324,7 +324,7 @@ class InMemoryProductRepository:
         self.products[product_id] = updated
         
         # Track history
-        self.price_history.append((product_id, new_price, datetime.utcnow()))
+        self.price_history.append((product_id, new_price, datetime.now(timezone.utc)))
         
         return True
     

@@ -82,8 +82,8 @@ function AnimatedPrice({ value, duration = 600, style }: AnimatedPriceProps) {
     }).start();
 
     // Update display value during animation
-    const listener = animatedValue.addListener(({ v }) => {
-      setDisplayValue(Math.round(v));
+    const listener = animatedValue.addListener(({ value }) => {
+      setDisplayValue(Math.round(value));
     });
 
     return () => {
@@ -187,7 +187,7 @@ const countdownStyles = StyleSheet.create({
     borderRadius: BorderRadius.full,
   },
   timeLabel: {
-    ...Typography.fontFamily.mono,
+    fontFamily: Typography.fontFamily.mono,
     fontSize: Typography.fontSize.xs,
     color: Colors.neutral[500],
     minWidth: 48,
@@ -217,7 +217,7 @@ const badgeStyles = StyleSheet.create({
     borderRadius: BorderRadius.full,
   },
   text: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.xs,
     color: Colors.background,
     fontWeight: Typography.fontWeight.bold,
@@ -397,12 +397,12 @@ const styles = StyleSheet.create({
     marginRight: Spacing[3],
   },
   compactName: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.base,
     color: Colors.neutral[900],
   },
   compactMerchant: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[500],
   },
@@ -410,14 +410,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   compactBasePrice: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.xs,
     color: Colors.neutral[400],
     textDecorationLine: 'line-through',
     marginTop: Spacing[1],
   },
   compactCurrentPrice: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.md,
     color: Colors.primary[500],
   },
@@ -444,17 +444,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   merchantInitial: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.sm,
     color: Colors.primary[600],
   },
   merchantName: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[900],
   },
   categoryName: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.xs,
     color: Colors.neutral[500],
   },
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
 
   // Product
   productName: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.md,
     color: Colors.neutral[900],
     marginBottom: Spacing[2],
@@ -490,13 +490,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   basePrice: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[400],
     textDecorationLine: 'line-through',
   },
   savingsText: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.xs,
     color: Colors.accent[500],
     backgroundColor: Colors.accent[50],
@@ -505,7 +505,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
   },
   currentPrice: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize['3xl'],
     color: Colors.primary[500],
     marginTop: Spacing[1],
@@ -519,12 +519,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing[3],
   },
   stockText: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[500],
   },
   unitPrice: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[600],
   },
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing[3],
   },
   buyButtonText: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.md,
     color: Colors.background,
   },

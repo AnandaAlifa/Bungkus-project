@@ -386,13 +386,13 @@ const styles = StyleSheet.create({
     marginBottom: Spacing[3],
   },
   title: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.xl,
     color: Colors.neutral[900],
     marginBottom: Spacing[1],
   },
   subtitle: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[500],
     textAlign: 'center',
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing[4],
   },
   bodyText: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.base,
     color: Colors.neutral[700],
     lineHeight: Typography.fontSize.base * Typography.lineHeight.relaxed,
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing[4],
   },
   legalText: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.xs,
     color: Colors.neutral[500],
     lineHeight: Typography.fontSize.xs * Typography.lineHeight.relaxed,
@@ -445,12 +445,12 @@ const styles = StyleSheet.create({
     marginRight: Spacing[3],
   },
   consentLabel: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.base,
     color: Colors.neutral[900],
   },
   consentSublabel: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.xs,
     color: Colors.neutral[500],
     marginTop: Spacing[1],
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.neutral[200],
   },
   acceptButtonText: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.md,
     color: Colors.background,
   },
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing[2],
   },
   declineButtonText: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[500],
   },

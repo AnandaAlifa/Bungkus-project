@@ -260,12 +260,12 @@ const styles = StyleSheet.create({
     paddingTop: Spacing[4],
   },
   logo: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize['3xl'],
     color: Colors.primary[500],
   },
   subtitle: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[500],
     marginTop: Spacing[1],
@@ -274,13 +274,13 @@ const styles = StyleSheet.create({
     marginBottom: Spacing[6],
   },
   sectionTitle: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.lg,
     color: Colors.neutral[900],
     marginBottom: Spacing[1],
   },
   sectionDesc: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[500],
     marginBottom: Spacing[3],
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary[500],
   },
   demoButtonText: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[700],
   },
@@ -314,13 +314,13 @@ const styles = StyleSheet.create({
     marginTop: Spacing[4],
   },
   wsStatusTitle: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[700],
     marginBottom: Spacing[2],
   },
   wsStatusValue: {
-    ...Typography.fontFamily.mono,
+    fontFamily: Typography.fontFamily.mono,
     fontSize: Typography.fontSize.xs,
     color: Colors.neutral[500],
     marginBottom: Spacing[1],

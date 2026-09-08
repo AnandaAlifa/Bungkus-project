@@ -158,12 +158,12 @@ const avatarStyles = StyleSheet.create({
     alignItems: 'center',
   },
   avatarText: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.sm,
     color: Colors.primary[700],
   },
   avatarInitial: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.sm,
     color: Colors.primary[700],
   },
@@ -182,7 +182,7 @@ const avatarStyles = StyleSheet.create({
     backgroundColor: Colors.neutral[200],
   },
   overflowText: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.xs,
     color: Colors.neutral[600],
   },
@@ -191,7 +191,7 @@ const avatarStyles = StyleSheet.create({
     borderStyle: 'dashed',
   },
   emptyText: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[400],
   },
@@ -269,12 +269,12 @@ const progressStyles = StyleSheet.create({
     marginBottom: Spacing[2],
   },
   label: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[500],
   },
   count: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[700],
   },
@@ -300,7 +300,7 @@ const progressStyles = StyleSheet.create({
     alignSelf: 'center',
   },
   metText: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.xs,
     color: Colors.primary[600],
   },
@@ -390,7 +390,7 @@ const countdownStyles = StyleSheet.create({
     marginRight: Spacing[2],
   },
   time: {
-    ...Typography.fontFamily.mono,
+    fontFamily: Typography.fontFamily.mono,
     fontSize: Typography.fontSize['2xl'],
     fontWeight: Typography.fontWeight.bold,
     color: Colors.accent[600],
@@ -399,7 +399,7 @@ const countdownStyles = StyleSheet.create({
     color: Colors.error,
   },
   label: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.xs,
     color: Colors.neutral[500],
     marginLeft: Spacing[2],
@@ -484,7 +484,7 @@ const shareStyles = StyleSheet.create({
     fontSize: Typography.fontSize.lg,
   },
   whatsappText: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.base,
     color: Colors.background,
   },
@@ -502,7 +502,7 @@ const shareStyles = StyleSheet.create({
     fontSize: Typography.fontSize.lg,
   },
   linkText: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.base,
     color: Colors.neutral[700],
   },
@@ -637,7 +637,7 @@ const styles = StyleSheet.create({
     gap: Spacing[2],
   },
   badge: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.xs,
     color: Colors.primary[600],
     backgroundColor: Colors.primary[50],
@@ -647,12 +647,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   discount: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.xs,
     color: Colors.accent[500],
   },
   detailLink: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.xs,
     color: Colors.primary[500],
   },
@@ -662,7 +662,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing[3],
   },
   productName: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.md,
     color: Colors.neutral[900],
     marginBottom: Spacing[1],
@@ -673,13 +673,13 @@ const styles = StyleSheet.create({
     gap: Spacing[2],
   },
   originalPrice: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[400],
     textDecorationLine: 'line-through',
   },
   groupPrice: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.xl,
     color: Colors.primary[500],
   },
@@ -699,7 +699,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing[3],
   },
   statusText: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.sm,
     color: Colors.primary[600],
   },
@@ -721,7 +721,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   joinButtonText: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.md,
     color: Colors.background,
   },
@@ -732,7 +732,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   quotaMetText: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.base,
     color: Colors.primary[600],
   },

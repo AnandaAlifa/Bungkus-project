@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 # ============================================================================
@@ -67,8 +67,8 @@ class WSEvent(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     data: Dict[str, Any] = Field(default_factory=dict)
     
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "event_type": "MEMBER_JOINED",
                 "group_buy_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -81,6 +81,7 @@ class WSEvent(BaseModel):
                 },
             }
         }
+    )
 
 
 # ============================================================================

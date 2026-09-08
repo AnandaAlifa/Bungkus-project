@@ -80,8 +80,8 @@ function AnimatedCounter({
       useNativeDriver: false,
     }).start();
 
-    const listener = animatedValue.addListener(({ v }) => {
-      setDisplayValue(v);
+    const listener = animatedValue.addListener(({ value }) => {
+      setDisplayValue(value);
     });
 
     return () => {
@@ -131,12 +131,12 @@ const statStyles = StyleSheet.create({
     marginBottom: Spacing[2],
   },
   value: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.xl,
     marginBottom: Spacing[1],
   },
   label: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.xs,
     textAlign: 'center',
   },
@@ -182,7 +182,7 @@ const streakStyles = StyleSheet.create({
     gap: Spacing[2],
   },
   label: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.sm,
     color: Colors.accent[600],
   },
@@ -193,7 +193,7 @@ const streakStyles = StyleSheet.create({
     fontSize: Typography.fontSize.sm,
   },
   count: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.sm,
     color: Colors.accent[600],
   },
@@ -332,12 +332,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.lg,
     color: Colors.neutral[900],
   },
   subtitle: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[500],
     marginTop: Spacing[1],
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
   },
   rankText: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.sm,
   },
 
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing[3],
   },
   monthlyTitle: {
-    ...Typography.fontFamily.semibold,
+    fontFamily: Typography.fontFamily.semibold,
     fontSize: Typography.fontSize.sm,
     color: Colors.neutral[700],
     marginBottom: Spacing[3],
@@ -382,12 +382,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   monthlyValue: {
-    ...Typography.fontFamily.bold,
+    fontFamily: Typography.fontFamily.bold,
     fontSize: Typography.fontSize.md,
     color: Colors.neutral[900],
   },
   monthlyLabel: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.xs,
     color: Colors.neutral[500],
     marginTop: Spacing[1],
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.lg,
   },
   factText: {
-    ...Typography.fontFamily.regular,
+    fontFamily: Typography.fontFamily.regular,
     fontSize: Typography.fontSize.sm,
     color: Colors.primary[700],
     flex: 1,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing[2],
   },
   detailButtonText: {
-    ...Typography.fontFamily.medium,
+    fontFamily: Typography.fontFamily.medium,
     fontSize: Typography.fontSize.sm,
     color: Colors.primary[500],
   },

@@ -6,7 +6,7 @@ Type-safe configuration and data models for the pricing engine.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timezone, timedelta
 from enum import Enum
 from typing import Optional
 
@@ -126,7 +126,7 @@ class Product(BaseModel):
     @property
     def t_rem(self) -> timedelta:
         """Time remaining until expiry."""
-        return self.expiry_timestamp - datetime.utcnow()
+        return self.expiry_timestamp - datetime.now(timezone.utc)
 
 
 class PriceCalculationResult(BaseModel):

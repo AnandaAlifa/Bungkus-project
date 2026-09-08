@@ -52,13 +52,13 @@ export default function ConsumerApp() {
     let mapInstance: any = null;
     const initMap = async () => {
       const L = await import("leaflet");
-      await import("leaflet/dist/leaflet.css");
+      
 
       mapInstance = L.map(mapRef.current!).setView([userLocation.lat, userLocation.lng], 14);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap",
-      }).addTo(map);
+      }).addTo(mapInstance);
 
       // User marker
       L.circleMarker([userLocation.lat, userLocation.lng], {
@@ -66,7 +66,7 @@ export default function ConsumerApp() {
         fillColor: "#0E9F6E",
         color: "#fff",
         weight: 2,
-      }).addTo(map).bindPopup("📍 Lokasi Anda");
+      }).addTo(mapInstance).bindPopup("📍 Lokasi Anda");
 
       // Merchant markers
       mockMerchants.forEach((m) => {
@@ -75,7 +75,7 @@ export default function ConsumerApp() {
           className: "",
         });
         L.marker([m.lat, m.lng], { icon })
-          .addTo(map)
+          .addTo(mapInstance)
           .bindPopup(`<b>${m.name}</b><br>${m.type} • ${m.distance}`);
       });
     };
