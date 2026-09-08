@@ -1,0 +1,223 @@
+# ============================================================
+# Bungkus! — Redis Cache Seed Commands
+# ============================================================
+# Run: redis-cli < redis_seed.txt
+# Or paste block-by-block into redis-cli
+# ============================================================
+
+# ------------------------------------------------------------
+# 1. DYNAMIC PRICE CACHE (per product)
+# ------------------------------------------------------------
+# TTL: 1 hour (price recalculated every 5 min by worker)
+
+# Roti Tawar Gandum Premium
+SET bungkus:price:p-001 \
+  '{"product_id":"p-001","p_base":22000,"p_min":5500,"p_current":15400,"discount_pct":30.0,"t_rem_seconds":10800,"t_total_seconds":28800,"q_rem":8,"q_init":30,"calculated_at":"2026-09-08T12:00:00+07:00"}' \
+  EX 3600
+
+# Croissant Coklat Praline
+SET bungkus:price:p-002 \
+  '{"product_id":"p-002","p_base":28000,"p_min":7000,"p_current":18200,"discount_pct":35.0,"t_rem_seconds":5400,"t_total_seconds":36000,"q_rem":3,"q_init":20,"calculated_at":"2026-09-08T12:00:00+07:00"}' \
+  EX 3600
+
+# Nasi Goreng Spesial Ayam
+SET bungkus:price:p-005 \
+  '{"product_id":"p-005","p_base":35000,"p_min":10500,"p_current":24500,"discount_pct":30.0,"t_rem_seconds":14400,"t_total_seconds":21600,"q_rem":4,"q_init":15,"calculated_at":"2026-09-08T12:00:00+07:00"}' \
+  EX 3600
+
+# Chicken Katsu Don
+SET bungkus:price:p-009 \
+  '{"product_id":"p-009","p_base":42000,"p_min":12600,"p_current":29400,"discount_pct":30.0,"t_rem_seconds":25200,"t_total_seconds":32400,"q_rem":3,"q_init":10,"calculated_at":"2026-09-08T12:00:00+07:00"}' \
+  EX 3600
+
+# ------------------------------------------------------------
+# 2. INVENTORY CACHE (per product)
+# ------------------------------------------------------------
+# TTL: 6 hours
+
+HSET bungkus:inventory:p-001 q_rem 8 q_reserved 2 status ACTIVE
+EXPIRE bungkus:inventory:p-001 21600
+
+HSET bungkus:inventory:p-002 q_rem 3 q_reserved 0 status LOW_STOCK
+EXPIRE bungkus:inventory:p-002 21600
+
+HSET bungkus:inventory:p-005 q_rem 4 q_reserved 2 status ACTIVE
+EXPIRE bungkus:inventory:p-005 21600
+
+HSET bungkus:inventory:p-009 q_rem 3 q_reserved 1 status ACTIVE
+EXPIRE bungkus:inventory:p-009 21600
+
+# ------------------------------------------------------------
+# 3. DISTRIBUTION LOCKS (active reservations)
+# ------------------------------------------------------------
+# Pattern: lock:bungkus:product:{id}:inventory
+# TTL: 10 seconds (short-lived atomic lock)
+
+# Lock held for Roti Tawar (2 reserved slots)
+SET lock:bungkus:product:p-001:inventory "reservation:u-010:1" EX 10
+
+# Lock held for Nasi Goreng (2 reserved slots)
+SET lock:bungkus:product:p-005:inventory "reservation:u-020:1" EX 10
+
+# ------------------------------------------------------------
+# 4. GROUP BUY QUOTA LOCKS
+# ------------------------------------------------------------
+# Pattern: lock:bungkus:group_buy:{id}:quota
+# TTL: 30 seconds
+
+SET lock:bungkus:group_buy:gb-001:quota "checking:u-040" EX 30
+SET lock:bungkus:group_buy:gb-003:quota "checking:u-020" EX 30
+
+# ------------------------------------------------------------
+# 5. GROUP BUY META (state + countdown)
+# ------------------------------------------------------------
+# TTL: 1 hour
+
+HSET bungkus:group_buy:gb-001:meta \
+  group_id "gb-001" \
+  product_id "p-001" \
+  merchant_id "m-001-holland" \
+  leader_id "u-010" \
+  state "WAITING_MEMBERS" \
+  required_quota 5 \
+  current_quota 3 \
+  max_quota 10 \
+  original_price 22000 \
+  group_price 15400 \
+  started_at "2026-09-08T11:48:00+07:00" \
+  expires_at "2026-09-08T12:18:00+07:00" \
+  seconds_remaining 1080
+EXPIRE bungkus:group_buy:gb-001:meta 3600
+
+HSET bungkus:group_buy:gb-002:meta \
+  group_id "gb-002" \
+  product_id "p-005" \
+  merchant_id "m-002-farmers" \
+  leader_id "u-020" \
+  state "LOCKED" \
+  required_quota 4 \
+  current_quota 4 \
+  max_quota 8 \
+  original_price 35000 \
+  group_price 24500 \
+  started_at "2026-09-08T11:52:00+07:00" \
+  expires_at "2026-09-08T12:07:00+07:00" \
+  seconds_remaining 420
+EXPIRE bungkus:group_buy:gb-002:meta 3600
+
+HSET bungkus:group_buy:gb-003:meta \
+  group_id "gb-003" \
+  product_id "p-009" \
+  merchant_id "m-004-donburi" \
+  leader_id "u-030" \
+  state "WAITING_MEMBERS" \
+  required_quota 3 \
+  current_quota 1 \
+  max_quota 6 \
+  original_price 42000 \
+  group_price 29400 \
+  started_at "2026-09-08T11:57:00+07:00" \
+  expires_at "2026-09-08T12:42:00+07:00" \
+  seconds_remaining 2520
+EXPIRE bungkus:group_buy:gb-003:meta 3600
+
+# ------------------------------------------------------------
+# 6. GROUP BUY MEMBERS (Sorted Set by join time)
+# ------------------------------------------------------------
+# Score = Unix timestamp of join
+
+ZADD bungkus:group_buy:gb-001:members 1757324400 "u-010"
+ZADD bungkus:group_buy:gb-001:members 1757324520 "u-020"
+ZADD bungkus:group_buy:gb-001:members 1757324700 "u-030"
+
+ZADD bungkus:group_buy:gb-002:members 1757324580 "u-010"
+ZADD bungkus:group_buy:gb-002:members 1757324640 "u-020"
+ZADD bungkus:group_buy:gb-002:members 1757324700 "u-030"
+ZADD bungkus:group_buy:gb-002:members 1757324760 "u-040"
+
+ZADD bungkus:group_buy:gb-003:members 1757324820 "u-040"
+
+# ------------------------------------------------------------
+# 7. GROUP BUY PAYMENTS (Hash: user_id → payment_status)
+# ------------------------------------------------------------
+HSET bungkus:group_buy:gb-001:payments u-010 "HELD" u-020 "PAID" u-030 "PENDING"
+HSET bungkus:group_buy:gb-002:payments u-010 "PAID" u-020 "PAID" u-030 "HELD" u-040 "PAID"
+HSET bungkus:group_buy:gb-003:payments u-040 "PENDING"
+
+# ------------------------------------------------------------
+# 8. GEO-SPATIAL: Merchant Locations (GEOADD)
+# ------------------------------------------------------------
+# GEOSEARCH bungkus:geo:merchants FROMLONLAT 106.8456 -6.2088 BYRADIUS 5 km ASC
+
+GEOADD bungkus:geo:merchants 106.7965 -6.2416 "m-001-holland"
+GEOADD bungkus:geo:merchants 106.8209 -6.1944 "m-002-farmers"
+GEOADD bungkus:geo:merchants 106.6319 -6.3021 "m-003-tlj"
+GEOADD bungkus:geo:merchants 107.6107 -6.8915 "m-004-donburi"
+GEOADD bungkus:geo:merchants 106.6390 -6.2147 "m-005-ratio"
+
+# ------------------------------------------------------------
+# 9. USER CART (per user)
+# ------------------------------------------------------------
+# TTL: 6 hours
+
+HSET bungkus:cart:u-010 p-001 1 p-005 2
+EXPIRE bungkus:cart:u-010 21600
+
+HSET bungkus:cart:u-020 p-004 1
+EXPIRE bungkus:cart:u-020 21600
+
+# ------------------------------------------------------------
+# 10. RATE LIMITING (per user, sliding window)
+# ------------------------------------------------------------
+# TTL: 60 seconds
+
+SET bungkus:rate_limit:u-010 "3" EX 60
+SET bungkus:rate_limit:u-020 "1" EX 60
+
+# ------------------------------------------------------------
+# 11. SESSION / AUTH TOKENS
+# ------------------------------------------------------------
+# TTL: 24 hours
+
+SET bungkus:session:u-010 '{"token":"eyJhbGci...","provider":"google","expires_at":"2026-09-09T12:00:00+07:00"}' EX 86400
+SET bungkus:session:u-020 '{"token":"eyJhbGci...","provider":"google","expires_at":"2026-09-09T12:00:00+07:00"}' EX 86400
+
+# ------------------------------------------------------------
+# 12. LIVE IMPACT COUNTERS (global)
+# ------------------------------------------------------------
+# Incremented atomically on each order completion
+
+SET bungkus:impact:meals_saved 125847
+SET bungkus:impact:co2e_prevented_kg 89200
+SET bungkus:impact:total_savings_rp 2450000000
+
+# ------------------------------------------------------------
+# VERIFICATION COMMANDS
+# ------------------------------------------------------------
+# Run these to verify the seed data:
+#
+# KEYSPACE:
+#   KEYS bungkus:*
+#
+# PRICE CACHE:
+#   GET bungkus:price:p-001
+#   TTL bungkus:price:p-001
+#
+# INVENTORY:
+#   HGETALL bungkus:inventory:p-001
+#
+# GROUP BUY META:
+#   HGETALL bungkus:group_buy:gb-001:meta
+#   HGETALL bungkus:group_buy:gb-001:payments
+#   ZRANGE bungkus:group_buy:gb-001:members 0 -1 WITHSCORES
+#
+# GEO SPATIAL:
+#   GEOPOS bungkus:geo:merchants m-001-holland
+#   GEODIST bungkus:geo:merchants m-001-holland m-002-farmers km
+#   GEOSEARCH bungkus:geo:merchants FROMLONLAT 106.8456 -6.2088 BYRADIUS 5 km ASC COUNT 3
+#
+# IMPACT:
+#   GET bungkus:impact:meals_saved
+#
+# CART:
+#   HGETALL bungkus:cart:u-010

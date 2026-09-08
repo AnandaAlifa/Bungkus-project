@@ -1,0 +1,331 @@
+{
+  "api_version": "1.0",
+  "generated_at": "2026-09-08T12:00:00+07:00",
+
+  "payload_a_nearby_merchants": {
+    "endpoint": "/api/v1/merchants/nearby?lat=-6.2088&lng=106.8456&radius=5000",
+    "method": "GET",
+    "description": "Geo-spatial search — merchants within 5km of user location",
+    "response": {
+      "success": true,
+      "data": {
+        "user_location": {
+          "lat": -6.2088,
+          "lng": 106.8456
+        },
+        "search_radius_m": 5000,
+        "total_results": 3,
+        "merchants": [
+          {
+            "id": "m-002-farmers",
+            "name": "Farmers Market Grand Indonesia",
+            "slug": "farmers-grandindonesia",
+            "business_type": "supermarket",
+            "tier": "PLATINUM",
+            "avg_rating": 4.5,
+            "total_reviews": 891,
+            "distance_m": 1247,
+            "location": {
+              "lat": -6.1944,
+              "lng": 106.8209
+            },
+            "address": "Grand Indonesia Shopping Town, Lt. LG",
+            "city": "Jakarta Pusat",
+            "operational_hours": {
+              "today": "08:00-22:00",
+              "is_open": true
+            },
+            "active_products_count": 23,
+            "active_near_expiry_count": 8,
+            "has_group_buy_active": true,
+            "pos_connected": true,
+            "thumbnail_url": "https://images.bungkus.id/merchants/farmers-gi-thumb.webp"
+          },
+          {
+            "id": "m-001-holland",
+            "name": "Holland Bakery cab. Senopati",
+            "slug": "holland-senopati",
+            "business_type": "bakery",
+            "tier": "GOLD",
+            "avg_rating": 4.7,
+            "total_reviews": 312,
+            "distance_m": 3681,
+            "location": {
+              "lat": -6.2416,
+              "lng": 106.7965
+            },
+            "address": "Jl. Senopati No. 78, Kebayoran Baru",
+            "city": "Jakarta Selatan",
+            "operational_hours": {
+              "today": "06:00-21:00",
+              "is_open": true
+            },
+            "active_products_count": 12,
+            "active_near_expiry_count": 5,
+            "has_group_buy_active": true,
+            "pos_connected": true,
+            "thumbnail_url": "https://images.bungkus.id/merchants/holland-senopati-thumb.webp"
+          },
+          {
+            "id": "m-003-tlj",
+            "name": "Tous Les Jours BSD City",
+            "slug": "tlj-bsd",
+            "business_type": "bakery",
+            "tier": "SILVER",
+            "avg_rating": 4.6,
+            "total_reviews": 178,
+            "distance_m": 4923,
+            "location": {
+              "lat": -6.3021,
+              "lng": 106.6319
+            },
+            "address": "BSD Green Office Park, Ruko Blok M",
+            "city": "Tangerang Selatan",
+            "operational_hours": {
+              "today": "07:00-21:00",
+              "is_open": true
+            },
+            "active_products_count": 9,
+            "active_near_expiry_count": 3,
+            "has_group_buy_active": false,
+            "pos_connected": true,
+            "thumbnail_url": "https://images.bungkus.id/merchants/tlj-bsd-thumb.webp"
+          }
+        ],
+        "pagination": {
+          "has_more": false,
+          "cursor": null,
+          "total": 3
+        }
+      }
+    }
+  },
+
+  "payload_b_active_group_buys": {
+    "endpoint": "/api/v1/group-buys/active",
+    "method": "GET",
+    "description": "Live group-buy feeds (WebSocket payload format)",
+    "websocket_events": [
+      {
+        "event": "GROUP_UPDATED",
+        "group_id": "gb-001",
+        "payload": {
+          "id": "gb-001",
+          "product": {
+            "id": "p-001",
+            "name": "Roti Tawar Gandum Premium",
+            "merchant_name": "Holland Bakery cab. Senopati",
+            "thumbnail_url": "https://images.bungkus.id/products/roti-gandum-thumb.webp",
+            "base_price": 22000,
+            "group_price": 15400,
+            "discount_percent": 30,
+            "unit": "pcs"
+          },
+          "quota": {
+            "required": 5,
+            "current": 3,
+            "remaining": 2,
+            "percentage": 60
+          },
+          "timer": {
+            "expires_at": "2026-09-08T12:18:00+07:00",
+            "seconds_remaining": 1080,
+            "formatted": "18:00"
+          },
+          "state": "WAITING_MEMBERS",
+          "participants": [
+            {
+              "user_id": "u-010",
+              "display_name": "Budi S.",
+              "avatar_url": "https://i.pravatar.cc/150?u=budi",
+              "payment_status": "HELD",
+              "joined_at": "2026-09-08T11:50:00+07:00",
+              "reserved_qty": 1
+            },
+            {
+              "user_id": "u-020",
+              "display_name": "Sari D.",
+              "avatar_url": "https://i.pravatar.cc/150?u=sari",
+              "payment_status": "PAID",
+              "joined_at": "2026-09-08T11:52:00+07:00",
+              "reserved_qty": 1
+            },
+            {
+              "user_id": "u-030",
+              "display_name": "Andi P.",
+              "avatar_url": "https://i.pravatar.cc/150?u=andi",
+              "payment_status": "PENDING",
+              "joined_at": "2026-09-08T11:55:00+07:00",
+              "reserved_qty": 1
+            }
+          ],
+          "share_link": "https://bungkus.id/g/gb-001",
+          "whatsapp_link": "https://wa.me/?text=Ayo%20Bungkus%20Roti%20Gandum!%20Hemat%2030%25%20%F0%9F%8D%9E%0Ahttps://bungkus.id/g/gb-001"
+        },
+        "timestamp": "2026-09-08T12:00:00+07:00"
+      },
+      {
+        "event": "MEMBER_JOINED",
+        "group_id": "gb-003",
+        "payload": {
+          "group_id": "gb-003",
+          "new_member": {
+            "user_id": "u-040",
+            "display_name": "Raisa P.",
+            "avatar_url": "https://i.pravatar.cc/150?u=raisa"
+          },
+          "new_quota": {
+            "current": 2,
+            "required": 3,
+            "remaining": 1,
+            "percentage": 67
+          }
+        },
+        "timestamp": "2026-09-08T12:00:00+07:00"
+      },
+      {
+        "event": "GROUP_TIMED_OUT",
+        "group_id": "gb-expired-001",
+        "payload": {
+          "group_id": "gb-expired-001",
+          "product_name": "Sushi Salmon Roll",
+          "final_quota": 1,
+          "required_quota": 4,
+          "reason": "QUOTA_NOT_MET",
+          "refund_status": "PROCESSING",
+          "participants_notified": 1
+        },
+        "timestamp": "2026-09-08T11:45:00+07:00"
+      }
+    ]
+  },
+
+  "payload_c_impact_dashboard": {
+    "endpoint": "/api/v1/user/impact-dashboard",
+    "method": "GET",
+    "description": "Personal ESG metrics for consumer dashboard",
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIs..."
+    },
+    "response": {
+      "success": true,
+      "data": {
+        "user_id": "u-010",
+        "display_name": "Budi Santoso",
+        "member_since": "2026-06-08",
+        "membership_tier": "ECO_WARRIOR",
+
+        "lifetime": {
+          "total_savings_rp": 2450000,
+          "total_meals_saved": 47,
+          "total_co2e_prevented_kg": 12.8,
+          "total_orders_completed": 34,
+          "total_group_buys_joined": 12,
+          "total_group_buys_led": 3
+        },
+
+        "monthly": {
+          "savings_rp": 670000,
+          "meals_saved": 11,
+          "co2e_prevented_kg": 3.2,
+          "orders_completed": 9,
+          "vs_last_month": {
+            "savings_change_pct": 18.5,
+            "meals_change_pct": 22.0,
+            "co2e_change_pct": 15.3
+          }
+        },
+
+        "weekly_trend": [
+          {"day": "2026-09-01", "orders": 1, "savings_rp": 6800, "co2e_kg": 0.3},
+          {"day": "2026-09-02", "orders": 0, "savings_rp": 0, "co2e_kg": 0},
+          {"day": "2026-09-03", "orders": 2, "savings_rp": 15400, "co2e_kg": 0.8},
+          {"day": "2026-09-04", "orders": 1, "savings_rp": 8500, "co2e_kg": 0.4},
+          {"day": "2026-09-05", "orders": 3, "savings_rp": 22100, "co2e_kg": 1.1},
+          {"day": "2026-09-06", "orders": 1, "savings_rp": 7200, "co2e_kg": 0.3},
+          {"day": "2026-09-07", "orders": 1, "savings_rp": 7000, "co2e_kg": 0.3}
+        ],
+
+        "streak": {
+          "current_days": 7,
+          "longest_days": 14,
+          "next_milestone": {
+            "days": 14,
+            "reward": "Eco Warrior Badge + 5% Extra Discount"
+          }
+        },
+
+        "rank": {
+          "global": 42,
+          "city": 12,
+          "friends": 3,
+          "total_users": 7300,
+          "percentile": 99
+        },
+
+        "fun_facts": [
+          {
+            "icon": "🍞",
+            "text": "Budi sudah menyelamatkan 47 porsi makanan — setara dengan mengisi 3 rak roti!"
+          },
+          {
+            "icon": "🌍",
+            "text": "Dampak Budi = menghilangkan emisi 1 mobil selama 2 hari!"
+          },
+          {
+            "icon": "💰",
+            "text": "Budi hemat Rp 2,45 juta — cukup untuk 2 makan malam restoran!"
+          }
+        ],
+
+        "carbon_equivalents": {
+          "trees_planted": 0.58,
+          "cars_off_road_days": 2,
+          "flights_avoided_km": 89,
+          "phones_charged": 1520
+        },
+
+        "achievements": [
+          {
+            "id": "ach-first-order",
+            "name": "Pembungkus Pertama",
+            "description": "Selesaikan pesanan pertama",
+            "icon": "🎉",
+            "unlocked_at": "2026-06-10T14:22:00+07:00",
+            "completed": true
+          },
+          {
+            "id": "ach-group-starter",
+            "name": "Pencetus Bareng",
+            "description": "Buat grup Bungkus Bareng pertama",
+            "icon": "📢",
+            "unlocked_at": "2026-06-15T10:15:00+07:00",
+            "completed": true
+          },
+          {
+            "id": "ach-7-day-streak",
+            "name": "Pejuang 7 Hari",
+            "description": "Beli 7 hari berturut-turut",
+            "icon": "🔥",
+            "unlocked_at": null,
+            "completed": false,
+            "progress": "7/7",
+            "current": 7,
+            "target": 7
+          },
+          {
+            "id": "ach-50-meals",
+            "name": "Penyelamat 50 Porsi",
+            "description": "Selamatkan 50 porsi makanan",
+            "icon": "🍽️",
+            "unlocked_at": null,
+            "completed": false,
+            "progress": "47/50",
+            "current": 47,
+            "target": 50
+          }
+        ]
+      }
+    }
+  }
+}

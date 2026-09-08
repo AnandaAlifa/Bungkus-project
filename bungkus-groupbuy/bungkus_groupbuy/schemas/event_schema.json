@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bungkus! Group Buy Event Schema",
+  "description": "WebSocket event payloads for Group Buy (Bungkus Bareng) real-time updates",
+  "definitions": {
+    "WSEventType": {
+      "type": "string",
+      "enum": [
+        "GROUP_CREATED",
+        "GROUP_UPDATED",
+        "GROUP_TIMED_OUT",
+        "GROUP_CANCELLED",
+        "MEMBER_JOINED",
+        "MEMBER_LEFT",
+        "MEMBER_COUNT_UPDATED",
+        "QUOTA_MET",
+        "QUOTA_UNMET",
+        "PAYMENT_HELD",
+        "PAYMENT_CONFIRMED",
+        "PAYMENT_FAILED",
+        "PAYMENT_REFUNDED",
+        "GROUP_LOCKED",
+        "GROUP_COMPLETED",
+        "GROUP_EXPIRED",
+        "PRICE_UPDATED",
+        "HEARTBEAT",
+        "ERROR"
+      ]
+    },
+    "Location": {
+      "type": "object",
+      "properties": {
+        "lng": { "type": "number" },
+        "lat": { "type": "number" }
+      },
+      "required": ["lng", "lat"]
+    },
+    "RefundInfo": {
+      "type": "object",
+      "properties": {
+        "auto_refund": { "type": "boolean" },
+        "estimated_refund_time": { "type": "string" },
+        "estimated_time": { "type": "string" }
+      }
+    },
+    "RecentMember": {
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "display_name": { "type": "string" },
+        "avatar_url": { "type": "string" },
+        "joined_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "display_name"]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "event_type": { "$ref": "#/definitions/WSEventType" },
+    "group_buy_id": { "type": "string", "format": "uuid" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "data": { "type": "object" }
+  },
+  "required": ["event_type", "group_buy_id", "timestamp", "data"]
+}
