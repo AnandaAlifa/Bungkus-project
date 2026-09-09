@@ -19,7 +19,7 @@ import json
 import logging
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Protocol
@@ -328,10 +328,7 @@ class GroupBuyStateMachine:
             discount_pct=round(discount_pct, 2),
             state=GroupBuyState.CREATED,
             created_at=now,
-            expires_at=now.replace(
-                hour=now.hour + int(expires_in_hours),
-                minute=now.minute + int((expires_in_hours % 1) * 60)
-            ),
+            expires_at=now + timedelta(hours=expires_in_hours),
             product_name=product_name,
             product_image=product_image,
             merchant_name=merchant_name,
@@ -452,6 +449,9 @@ class GroupBuyStateMachine:
             "joined_at": str(int(member.joined_at.timestamp())),
         })
         
+        # Add user_id to members set for get_members() lookup
+        await self.redis.sadd(self._key(group_id, "members_set"), user_id)
+        
         # Determine event type
         event_type = EventType.MEMBER_JOINED
         state_enum = GroupBuyState(new_state)
@@ -542,6 +542,9 @@ class GroupBuyStateMachine:
 
         # Remove member record
         await self.redis.delete(member_key)
+        
+        # Remove user from members set
+        await self.redis.srem(self._key(group_id, "members_set"), user_id)
         
         # Emit event
         await self._emit_event(EventPayload(
@@ -823,11 +826,12 @@ class GroupBuyStateMachine:
     
     async def get_members(self, group_id: str) -> List[MemberRecord]:
         """Get all members of a group buy."""
-        member_key = self._key(group_id, "members")
-        members = await self.redis.smembers(member_key)
+        # Get member IDs from the set
+        members_set_key = self._key(group_id, "members_set")
+        member_ids = await self.redis.smembers(members_set_key)
         
         records = []
-        for member_id in members:
+        for member_id in member_ids:
             member_id_str = member_id.decode() if isinstance(member_id, bytes) else member_id
             detail_key = self._key(group_id, "members") + f":{member_id_str}"
             detail = await self.redis.hgetall(detail_key)

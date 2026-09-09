@@ -18,6 +18,7 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
@@ -365,9 +366,16 @@ class PaymentWebhookHandler:
         """Verify Xendit webhook signature.
         
         Xendit uses HMAC-SHA256 with the secret key.
+        In production, rejects requests without valid signature.
+        In development, allows requests without signature for testing.
         """
+        is_production = os.getenv("ENVIRONMENT", "development") == "production"
+        
         if not headers:
-            return True  # Skip verification if no headers (dev mode)
+            if is_production:
+                logger.warning("No headers provided in production - rejecting")
+                return False
+            return True  # Skip verification in dev mode
         
         xendit_signature = headers.get("x-callback-token") or headers.get("X-Callback-Token")
         if not xendit_signature:
@@ -376,6 +384,8 @@ class PaymentWebhookHandler:
         
         if not xendit_signature:
             logger.warning("No Xendit signature header found")
+            if is_production:
+                return False
             return True  # Skip in dev mode
         
         secret_key = self.config.get("xendit_secret_key", "")

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime, timezone, timezone, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import Callable, List, Optional, Protocol
 
 from .models import (

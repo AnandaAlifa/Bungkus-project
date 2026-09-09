@@ -6,7 +6,7 @@ Type-safe configuration and data models for the pricing engine.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, timezone, timedelta
+from datetime import datetime, timezone, timedelta
 from enum import Enum
 from typing import Optional
 
@@ -46,14 +46,14 @@ class PricingConfig(BaseModel):
         default=0.5,
         ge=0.0,
         le=1.0,
-        description="Minimum stock pressure factor (at 100% stock remaining)"
+        description="Minimum stock pressure factor (at 0% stock remaining)"
     )
     
     stock_pressure_max: float = Field(
         default=1.0,
         ge=0.0,
         le=1.0,
-        description="Maximum stock pressure factor (at 0% stock remaining)"
+        description="Maximum stock pressure factor (at 100% stock remaining)"
     )
     
     rounding_nearest: int = Field(
