@@ -19,7 +19,7 @@ import hmac
 import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
@@ -524,9 +524,7 @@ class PaymentWebhookHandler:
             "payment_method": payment_method,
             "status": "PENDING",
             "payment_url": f"https://app.sandbox.midtrans.com/snap/v1/vtweb/{order_id}",
-            "expires_at": datetime.now(timezone.utc).replace(
-                hour=datetime.now(timezone.utc).hour + 1
-            ).isoformat(),
+            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat(),
         }
         
         logger.info(f"Payment hold initiated: {order_id} for {amount} IDR")
