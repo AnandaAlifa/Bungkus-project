@@ -14,12 +14,9 @@ Where:
 
 from __future__ import annotations
 
-import math
 from datetime import timedelta
-from typing import Optional
 
-from .models import PricingConfig, Product, PriceCalculationResult, ProductStatus
-
+from .models import PriceCalculationResult, PricingConfig, Product
 
 # ============================================================================
 # CONSTANTS
@@ -39,7 +36,7 @@ def calculate_bungkus_dynamic_price(
     t_total: timedelta,
     q_rem: int,
     q_init: int,
-    config: Optional[PricingConfig] = None,
+    config: PricingConfig | None = None,
 ) -> float:
     """Calculate the dynamic price for a near-expiry product.
     
@@ -185,7 +182,7 @@ def _round_down_to_nearest(value: float, nearest: int) -> float:
 
 def calculate_price_for_product(
     product: Product,
-    config: Optional[PricingConfig] = None,
+    config: PricingConfig | None = None,
 ) -> PriceCalculationResult:
     """Calculate dynamic price for a Product model.
     

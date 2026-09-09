@@ -12,18 +12,17 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Callable, List, Optional, Protocol
+from datetime import UTC, datetime
+from typing import Protocol
 
 from .models import (
+    PriceCalculationResult,
     PricingConfig,
     Product,
     ProductStatus,
-    PriceCalculationResult,
     WorkerState,
 )
 from .pricing_engine import calculate_price_for_product
-
 
 # ============================================================================
 # LOGGER
@@ -39,7 +38,7 @@ logger = logging.getLogger("bungkus.pricing.worker")
 class ProductRepository(Protocol):
     """Protocol for product data access."""
     
-    async def get_active_products(self) -> List[Product]:
+    async def get_active_products(self) -> list[Product]:
         """Fetch all active products that need price updates."""
         ...
     
@@ -47,7 +46,7 @@ class ProductRepository(Protocol):
         self, 
         product_id: str, 
         new_price: float, 
-        new_status: Optional[ProductStatus] = None,
+        new_status: ProductStatus | None = None,
     ) -> bool:
         """Update a product's price and optionally its status."""
         ...
@@ -112,7 +111,7 @@ class PricingWorker:
         self,
         repository: ProductRepository,
         publisher: PriceEventPublisher,
-        config: Optional[PricingConfig] = None,
+        config: PricingConfig | None = None,
         interval_seconds: int = 60,
     ):
         """Initialize the pricing worker.
@@ -158,17 +157,16 @@ class PricingWorker:
             for product in products:
                 try:
                     await self._process_product(product)
-                except Exception as e:
-                    logger.error(
-                        f"Error processing product {product.id}: {e}",
-                        exc_info=True,
+                except Exception:
+                    logger.exception(
+                        f"Error processing product {product.id}",
                     )
                     self.state.errors += 1
                 finally:
                     # Always count as processed, even on error
                     self.state.products_processed += 1
             
-            self.state.last_run_at = datetime.now(timezone.utc)
+            self.state.last_run_at = datetime.now(UTC)
             logger.info(
                 f"Pricing cycle complete: "
                 f"{self.state.products_priced} priced, "
@@ -176,8 +174,8 @@ class PricingWorker:
                 f"{self.state.errors} errors"
             )
             
-        except Exception as e:
-            logger.error(f"Pricing cycle failed: {e}", exc_info=True)
+        except Exception:
+            logger.exception("Pricing cycle failed")
             self.state.errors += 1
         
         finally:
@@ -246,7 +244,7 @@ class PricingWorker:
     
     async def run_forever(
         self, 
-        interval_seconds: Optional[int] = None,
+        interval_seconds: int | None = None,
     ) -> None:
         """Run the worker continuously until stopped.
         
@@ -268,7 +266,7 @@ class PricingWorker:
                     timeout=interval,
                 )
                 break  # Stop event was set
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 continue  # Timeout means we should run again
         
         logger.info("Pricing worker stopped")
@@ -296,7 +294,7 @@ class InMemoryProductRepository:
         self.products: dict[str, Product] = {}
         self.price_history: list[tuple[str, float, datetime]] = []
     
-    async def get_active_products(self) -> List[Product]:
+    async def get_active_products(self) -> list[Product]:
         """Return all active products."""
         return [
             p for p in self.products.values()
@@ -307,14 +305,13 @@ class InMemoryProductRepository:
         self,
         product_id: str,
         new_price: float,
-        new_status: Optional[ProductStatus] = None,
+        new_status: ProductStatus | None = None,
     ) -> bool:
         """Update product price and status."""
         if product_id not in self.products:
             return False
         
         product = self.products[product_id]
-        old_price = product.p_current
         
         # Create updated product
         updated = product.model_copy(update={
@@ -324,7 +321,7 @@ class InMemoryProductRepository:
         self.products[product_id] = updated
         
         # Track history
-        self.price_history.append((product_id, new_price, datetime.now(timezone.utc)))
+        self.price_history.append((product_id, new_price, datetime.now(UTC)))
         
         return True
     
@@ -358,8 +355,8 @@ class InMemoryEventPublisher:
     """In-memory event publisher for testing."""
     
     def __init__(self):
-        self.price_events: List[PriceCalculationResult] = []
-        self.delist_events: List[tuple[str, str]] = []
+        self.price_events: list[PriceCalculationResult] = []
+        self.delist_events: list[tuple[str, str]] = []
     
     async def publish_price_changed(self, result: PriceCalculationResult) -> None:
         """Record a price change event."""

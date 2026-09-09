@@ -19,20 +19,16 @@ import hmac
 import json
 import logging
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from .state_machine import (
-    EventPayload,
-    EventType,
     GroupBuyStateMachine,
-    GroupBuyState,
     PaymentStatus,
 )
-
 
 # ============================================================================
 # LOGGER
@@ -93,15 +89,15 @@ class MidtransWebhookPayload(BaseModel):
     status_message: str
     
     # Fraud
-    fraud_status: Optional[str] = None
+    fraud_status: str | None = None
     
     # Signature (for verification)
     signature_key: str
     
     # Custom fields
-    custom_field1: Optional[str] = None  # group_buy_id
-    custom_field2: Optional[str] = None  # user_id
-    custom_field3: Optional[str] = None  # reserved_qty
+    custom_field1: str | None = None  # group_buy_id
+    custom_field2: str | None = None  # user_id
+    custom_field3: str | None = None  # reserved_qty
 
 
 class XenditWebhookPayload(BaseModel):
@@ -120,25 +116,25 @@ class XenditWebhookPayload(BaseModel):
     currency: str = "IDR"
     
     # Payment method
-    payment_method: Optional[str] = None
-    payment_channel: Optional[str] = None
+    payment_method: str | None = None
+    payment_channel: str | None = None
     
     # Timestamps
     created: str
     updated: str
     
     # Description
-    description: Optional[str] = None
+    description: str | None = None
     
     # Metadata
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class WebhookResponse(BaseModel):
     """Standard webhook response."""
     status: str = "ok"
     message: str = ""
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
 
 
 # ============================================================================
@@ -172,7 +168,7 @@ class PaymentWebhookHandler:
     def __init__(
         self,
         state_machine: GroupBuyStateMachine,
-        config: Dict[str, Any],
+        config: dict[str, Any],
     ):
         """Initialize the webhook handler.
         
@@ -195,8 +191,8 @@ class PaymentWebhookHandler:
     
     async def handle_midtrans(
         self,
-        payload: Dict[str, Any],
-        headers: Optional[Dict[str, str]] = None,
+        payload: dict[str, Any],
+        headers: dict[str, str] | None = None,
     ) -> WebhookResponse:
         """Handle Midtrans webhook notification.
         
@@ -223,7 +219,7 @@ class PaymentWebhookHandler:
             return await self._process_midtrans_status(data)
             
         except Exception as e:
-            logger.error(f"Midtrans webhook error: {e}", exc_info=True)
+            logger.exception("Midtrans webhook error")
             return WebhookResponse(
                 status="error",
                 message=str(e),
@@ -231,8 +227,8 @@ class PaymentWebhookHandler:
     
     async def handle_xendit(
         self,
-        payload: Dict[str, Any],
-        headers: Optional[Dict[str, str]] = None,
+        payload: dict[str, Any],
+        headers: dict[str, str] | None = None,
     ) -> WebhookResponse:
         """Handle Xendit webhook notification.
         
@@ -259,7 +255,7 @@ class PaymentWebhookHandler:
             return await self._process_xendit_status(data)
             
         except Exception as e:
-            logger.error(f"Xendit webhook error: {e}", exc_info=True)
+            logger.exception("Xendit webhook error")
             return WebhookResponse(
                 status="error",
                 message=str(e),
@@ -360,8 +356,8 @@ class PaymentWebhookHandler:
     
     def _verify_xendit_signature(
         self,
-        payload: Dict[str, Any],
-        headers: Optional[Dict[str, str]] = None,
+        payload: dict[str, Any],
+        headers: dict[str, str] | None = None,
     ) -> bool:
         """Verify Xendit webhook signature.
         
@@ -384,9 +380,7 @@ class PaymentWebhookHandler:
         
         if not xendit_signature:
             logger.warning("No Xendit signature header found")
-            if is_production:
-                return False
-            return True  # Skip in dev mode
+            return is_production  # Reject in production, allow in dev
         
         secret_key = self.config.get("xendit_secret_key", "")
         
@@ -466,7 +460,7 @@ class PaymentWebhookHandler:
     # HELPER METHODS
     # ========================================================================
     
-    def _extract_group_buy_id(self, order_id: str) -> Optional[str]:
+    def _extract_group_buy_id(self, order_id: str) -> str | None:
         """Extract group buy ID from order ID.
         
         Order ID format: GB-{group_buy_id_short}-{timestamp}
@@ -476,7 +470,7 @@ class PaymentWebhookHandler:
             return parts[1]
         return None
     
-    def _extract_user_id(self, order_id: str) -> Optional[str]:
+    def _extract_user_id(self, order_id: str) -> str | None:
         """Extract user ID from order ID.
         
         Order ID format: GB-{group_buy_id_short}-{user_id_short}-{timestamp}
@@ -496,7 +490,7 @@ class PaymentWebhookHandler:
         user_id: str,
         amount: float,
         payment_method: str = "QRIS",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Initiate a payment hold (escrow) for a member.
         
         This creates a pending transaction that will be settled
@@ -512,7 +506,7 @@ class PaymentWebhookHandler:
             Dict with payment gateway response
         """
         # Generate order ID
-        order_id = f"GB-{group_id[:8]}-{user_id[:8]}-{int(datetime.now(timezone.utc).timestamp())}"
+        order_id = f"GB-{group_id[:8]}-{user_id[:8]}-{int(datetime.now(UTC).timestamp())}"
         
         # In production, call Midtrans/Xendit API here
         # For now, return a mock response
@@ -524,7 +518,7 @@ class PaymentWebhookHandler:
             "payment_method": payment_method,
             "status": "PENDING",
             "payment_url": f"https://app.sandbox.midtrans.com/snap/v1/vtweb/{order_id}",
-            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat(),
+            "expires_at": (datetime.now(UTC) + timedelta(hours=1)).isoformat(),
         }
         
         logger.info(f"Payment hold initiated: {order_id} for {amount} IDR")

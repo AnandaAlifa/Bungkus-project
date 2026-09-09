@@ -7,12 +7,11 @@ pushed to nearby clients via WebSocket connections.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from pydantic import BaseModel, Field, ConfigDict
-
+from pydantic import BaseModel, ConfigDict, Field
 
 # ============================================================================
 # EVENT TYPES
@@ -64,8 +63,8 @@ class WSEvent(BaseModel):
     
     event_type: WSEventType
     group_buy_id: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    data: Dict[str, Any] = Field(default_factory=dict)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    data: dict[str, Any] = Field(default_factory=dict)
     
     model_config = ConfigDict(
         json_schema_extra={
@@ -93,7 +92,7 @@ class GroupCreatedEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.GROUP_CREATED, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "product_id": "",
         "product_name": "",
         "product_image": "",
@@ -116,7 +115,7 @@ class GroupUpdatedEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.GROUP_UPDATED, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "old_state": "",
         "new_state": "",
         "current_quota": 0,
@@ -130,7 +129,7 @@ class MemberJoinedEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.MEMBER_JOINED, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "user_id": "",
         "display_name": "",
         "avatar_url": "",
@@ -147,7 +146,7 @@ class MemberLeftEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.MEMBER_LEFT, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "user_id": "",
         "display_name": "",
         "reserved_qty": 1,
@@ -162,7 +161,7 @@ class QuotaMetEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.QUOTA_MET, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "current_quota": 0,
         "required_quota": 0,
         "excess_members": 0,
@@ -175,7 +174,7 @@ class GroupTimedOutEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.GROUP_TIMED_OUT, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "final_quota": 0,
         "required_quota": 0,
         "was_successful": False,
@@ -192,7 +191,7 @@ class PaymentHeldEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.PAYMENT_HELD, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "user_id": "",
         "payment_id": "",
         "amount": 0,
@@ -207,7 +206,7 @@ class PaymentConfirmedEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.PAYMENT_CONFIRMED, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "user_id": "",
         "payment_id": "",
         "amount": 0,
@@ -222,7 +221,7 @@ class PaymentFailedEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.PAYMENT_FAILED, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "user_id": "",
         "payment_id": "",
         "failure_reason": "",
@@ -236,7 +235,7 @@ class GroupLockedEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.GROUP_LOCKED, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "total_members": 0,
         "total_amount": 0,
         "currency": "IDR",
@@ -250,7 +249,7 @@ class GroupCompletedEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.GROUP_COMPLETED, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "total_members": 0,
         "total_savings": 0,
         "carbon_saved_kg": 0,
@@ -264,7 +263,7 @@ class GroupExpiredEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.GROUP_EXPIRED, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "final_quota": 0,
         "required_quota": 0,
         "reason": "quota_not_met",
@@ -281,7 +280,7 @@ class PriceUpdatedEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.PRICE_UPDATED, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "product_id": "",
         "old_price": 0,
         "new_price": 0,
@@ -294,8 +293,8 @@ class HeartbeatEvent(WSEvent):
     """Heartbeat event to keep connection alive."""
     
     event_type: WSEventType = Field(default=WSEventType.HEARTBEAT, frozen=True)
-    data: Dict[str, Any] = Field(default_factory=lambda: {
-        "server_time": datetime.now(timezone.utc).isoformat(),
+    data: dict[str, Any] = Field(default_factory=lambda: {
+        "server_time": datetime.now(UTC).isoformat(),
     })
 
 
@@ -304,7 +303,7 @@ class ErrorEvent(WSEvent):
     
     event_type: WSEventType = Field(default=WSEventType.ERROR, frozen=True)
     
-    data: Dict[str, Any] = Field(default_factory=lambda: {
+    data: dict[str, Any] = Field(default_factory=lambda: {
         "error_code": "",
         "error_message": "",
         "retryable": True,
@@ -327,7 +326,7 @@ class EventBuilder:
         reserved_qty: int,
         current_quota: int,
         required_quota: int,
-        recent_members: List[Dict[str, Any]] = None,
+        recent_members: list[dict[str, Any]] | None = None,
     ) -> MemberJoinedEvent:
         """Build a MEMBER_JOINED event."""
         progress_pct = (current_quota / required_quota * 100) if required_quota > 0 else 0
@@ -404,7 +403,7 @@ class EventBuilder:
                 "user_id": user_id,
                 "payment_id": payment_id,
                 "amount": amount,
-                "confirmed_at": datetime.now(timezone.utc).isoformat(),
+                "confirmed_at": datetime.now(UTC).isoformat(),
                 "total_paid": total_paid,
                 "total_expected": total_expected,
             },
@@ -443,7 +442,7 @@ class EventBuilder:
                 "total_members": total_members,
                 "total_savings": total_savings,
                 "carbon_saved_kg": carbon_saved_kg,
-                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "completed_at": datetime.now(UTC).isoformat(),
                 "message": "Group buy completed! Thank you for reducing food waste!",
             },
         )
@@ -475,7 +474,7 @@ class EventBuilder:
 # JSON SCHEMA EXPORT
 # ============================================================================
 
-def get_all_schemas() -> Dict[str, Any]:
+def get_all_schemas() -> dict[str, Any]:
     """Export all event schemas as JSON Schema."""
     schemas = {}
     

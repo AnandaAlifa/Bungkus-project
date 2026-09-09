@@ -14,19 +14,17 @@ State Transitions:
 
 from __future__ import annotations
 
-import asyncio
-import json
 import logging
 import time
 import uuid
-from datetime import datetime, timedelta, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol
+from typing import Any
 
 import redis.asyncio as aioredis
 from pydantic import BaseModel, Field
-
 
 # ============================================================================
 # LOGGER
@@ -80,7 +78,7 @@ class EventType(str, Enum):
 # VALID STATE TRANSITIONS
 # ============================================================================
 
-VALID_TRANSITIONS: Dict[GroupBuyState, List[GroupBuyState]] = {
+VALID_TRANSITIONS: dict[GroupBuyState, list[GroupBuyState]] = {
     GroupBuyState.CREATED: [
         GroupBuyState.WAITING_MEMBERS,
         GroupBuyState.EXPIRED,
@@ -126,11 +124,11 @@ class GroupBuyMeta(BaseModel):
     
     state: GroupBuyState = Field(default=GroupBuyState.CREATED)
     
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     expires_at: datetime
-    locked_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    quota_met_at: Optional[datetime] = None
+    locked_at: datetime | None = None
+    completed_at: datetime | None = None
+    quota_met_at: datetime | None = None
     
     product_name: str = ""
     product_image: str = ""
@@ -146,29 +144,29 @@ class MemberRecord(BaseModel):
     group_buy_id: str
     reserved_qty: int = 1
     payment_status: PaymentStatus = PaymentStatus.PENDING
-    payment_id: Optional[str] = None
-    joined_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    paid_at: Optional[datetime] = None
-    picked_up_at: Optional[datetime] = None
+    payment_id: str | None = None
+    joined_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    paid_at: datetime | None = None
+    picked_up_at: datetime | None = None
 
 
 class StateTransitionResult(BaseModel):
     """Result of a state transition attempt."""
     success: bool
-    old_state: Optional[GroupBuyState] = None
+    old_state: GroupBuyState | None = None
     new_state: GroupBuyState
-    error_message: Optional[str] = None
-    event: Optional[EventType] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    error_message: str | None = None
+    event: EventType | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class EventPayload(BaseModel):
     """Event payload for WebSocket/Event bus."""
     event_type: EventType
     group_buy_id: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    data: Dict[str, Any] = Field(default_factory=dict)
-    actor_id: Optional[str] = None
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    data: dict[str, Any] = Field(default_factory=dict)
+    actor_id: str | None = None
 
 
 # ============================================================================
@@ -219,7 +217,7 @@ class GroupBuyStateMachine:
     def __init__(
         self,
         redis: aioredis.Redis,
-        event_handler: Optional[Callable[[EventPayload], Any]] = None,
+        event_handler: Callable[[EventPayload], Any] | None = None,
     ):
         """Initialize the state machine.
         
@@ -271,7 +269,7 @@ class GroupBuyStateMachine:
         if self.event_handler:
             try:
                 await self.event_handler(event)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 - intentional catch-all for event handler
                 logger.error(f"Event handler error: {e}")
     
     # ========================================================================
@@ -314,7 +312,7 @@ class GroupBuyStateMachine:
         """
         await self._ensure_scripts_loaded()
         
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         discount_pct = ((original_price - group_price) / original_price) * 100
         
         meta = GroupBuyMeta(
@@ -612,7 +610,7 @@ class GroupBuyStateMachine:
         
         # Decode bytes from Redis
         decoded = [v.decode() if isinstance(v, bytes) else v for v in result]
-        success, old_state, new_state, error_msg = decoded
+        success, old_state, _new_state, error_msg = decoded
         
         if not success:
             return StateTransitionResult(
@@ -765,7 +763,7 @@ class GroupBuyStateMachine:
         if not meta:
             return
         
-        ttl = int((meta.expires_at - datetime.now(timezone.utc)).total_seconds())
+        ttl = int((meta.expires_at - datetime.now(UTC)).total_seconds())
         if ttl <= 0:
             # Already expired
             await self.transition(
@@ -780,7 +778,7 @@ class GroupBuyStateMachine:
         # or a dedicated scheduler like Celery/APScheduler)
         logger.info(f"Expiry timer set for group {group_id}: {ttl}s")
     
-    async def get_meta(self, group_id: str) -> Optional[GroupBuyMeta]:
+    async def get_meta(self, group_id: str) -> GroupBuyMeta | None:
         """Get group buy metadata from Redis."""
         meta_key = self._key(group_id, "meta")
         data = await self.redis.hgetall(meta_key)
@@ -809,10 +807,10 @@ class GroupBuyStateMachine:
                 discount_pct=float(decoded.get("discount_pct", 0)),
                 state=GroupBuyState(decoded.get("state", "CREATED")),
                 created_at=datetime.fromtimestamp(
-                    int(decoded.get("created_at", 0)), tz=timezone.utc
+                    int(decoded.get("created_at", 0)), tz=UTC
                 ),
                 expires_at=datetime.fromtimestamp(
-                    int(decoded.get("expires_at", 0)), tz=timezone.utc
+                    int(decoded.get("expires_at", 0)), tz=UTC
                 ),
                 product_name=decoded.get("product_name", ""),
                 product_image=decoded.get("product_image", ""),
@@ -820,11 +818,11 @@ class GroupBuyStateMachine:
                 location_lng=float(decoded.get("location_lng", 0)),
                 location_lat=float(decoded.get("location_lat", 0)),
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - intentional catch-all for parsing
             logger.error(f"Error parsing meta: {e}")
             return None
     
-    async def get_members(self, group_id: str) -> List[MemberRecord]:
+    async def get_members(self, group_id: str) -> list[MemberRecord]:
         """Get all members of a group buy."""
         # Get member IDs from the set
         members_set_key = self._key(group_id, "members_set")
@@ -850,8 +848,8 @@ class GroupBuyStateMachine:
                     payment_status=PaymentStatus(decoded.get("payment_status", "PENDING")),
                     payment_id=decoded.get("payment_id"),
                     joined_at=datetime.fromtimestamp(
-                        int(decoded.get("joined_at", 0)), tz=timezone.utc
-                    ) if decoded.get("joined_at") else datetime.now(timezone.utc),
+                        int(decoded.get("joined_at", 0)), tz=UTC
+                    ) if decoded.get("joined_at") else datetime.now(UTC),
                 ))
         
         return records

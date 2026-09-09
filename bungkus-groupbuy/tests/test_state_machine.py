@@ -13,31 +13,21 @@ from __future__ import annotations
 
 import asyncio
 import json
-import time
-from datetime import datetime, timedelta, timezone
-from typing import Dict, Any
-from unittest.mock import AsyncMock, MagicMock, patch
-
-import pytest
 
 # Mock Redis for testing (no actual Redis needed)
 import fakeredis.aioredis
-
+import pytest
 from bungkus_groupbuy import (
-    GroupBuyStateMachine,
-    GroupBuyMeta,
-    GroupBuyState,
-    MemberRecord,
-    PaymentStatus,
-    EventType,
-    EventPayload,
-    StateTransitionResult,
-    PaymentWebhookHandler,
-    WebhookResponse,
     EventBuilder,
+    EventPayload,
+    EventType,
+    GroupBuyState,
+    GroupBuyStateMachine,
+    PaymentStatus,
+    PaymentWebhookHandler,
+    StateTransitionResult,
     WSEventType,
 )
-
 
 # ============================================================================
 # FIXTURES

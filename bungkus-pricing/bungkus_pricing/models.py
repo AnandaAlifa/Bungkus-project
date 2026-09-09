@@ -6,9 +6,8 @@ Type-safe configuration and data models for the pricing engine.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -126,7 +125,7 @@ class Product(BaseModel):
     @property
     def t_rem(self) -> timedelta:
         """Time remaining until expiry."""
-        return self.expiry_timestamp - datetime.now(timezone.utc)
+        return self.expiry_timestamp - datetime.now(UTC)
 
 
 class PriceCalculationResult(BaseModel):
@@ -142,7 +141,7 @@ class PriceCalculationResult(BaseModel):
     q_rem: int
     q_init: int
     should_delist: bool
-    delist_reason: Optional[str] = None
+    delist_reason: str | None = None
     
     @property
     def savings(self) -> float:
@@ -153,7 +152,7 @@ class PriceCalculationResult(BaseModel):
 class WorkerState(BaseModel):
     """State of the background pricing worker."""
     
-    last_run_at: Optional[datetime] = None
+    last_run_at: datetime | None = None
     products_processed: int = 0
     products_priced: int = 0
     products_delisted: int = 0
